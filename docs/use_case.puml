@@ -1,0 +1,111 @@
+@startuml
+title Интернет-магазин "Shop-core" 
+
+left to right direction
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+
+
+actor Guest
+actor User
+actor Admin
+
+
+User --|> Guest
+Admin --|> User
+
+rectangle "Shop-core" {
+
+  package "Auth / Users" {
+    (Регистрация) as UC_Register
+    (Авторизация) as UC_Login
+    (Обновить токен) as UC_Refresh
+    (Смена пароля) as UC_ChangePassword
+    (Просмотр профиля) as UC_ViewProfile
+    (Обновление профиля) as UC_UpdateProfile
+  }
+
+  package "Catalog" {
+    (Просмотреть каталог) as UC_ViewCatalog
+    (Просмотреть товар) as UC_ViewProduct
+    (Просмотреть категории) as UC_ViewCategories
+
+    (Админ: создать товар) as UC_AdminCreateProduct
+    (Админ: изменить товар) as UC_AdminUpdateProduct
+    (Админ: удалить товар) as UC_AdminDeleteProduct
+    (Админ: управлять категориями) as UC_AdminManageCategories
+  }
+
+  package "Cart" {
+    (Просмотреть корзину) as UC_ViewCart
+    (Добавить в корзину) as UC_AddToCart
+    (Изменить количество в корзине) as UC_UpdateCartQty
+    (Удалить из корзины) as UC_RemoveFromCart
+    (Очистить корзину) as UC_ClearCart
+  }
+
+  package "Orders" {
+    (Оформить заказ) as UC_CreateOrder
+    (Просмотреть свои заказы) as UC_ViewOwnOrders
+
+    (Админ: просмотреть все заказы) as UC_AdminViewAllOrders
+    (Админ: изменить статус заказа) as UC_AdminChangeOrderStatus
+  }
+
+  package "Reviews" {
+    (Добавить отзыв к товару) as UC_AddReview
+    (Просмотреть отзывы товара) as UC_ViewReviews
+  }
+
+  package "Promotions" {
+    (Просмотреть акции) as UC_ViewPromotions
+
+    (Админ: создать акцию) as UC_AdminCreatePromotion
+    (Админ: изменить акцию) as UC_AdminUpdatePromotion
+    (Админ: удалить акцию) as UC_AdminDeletePromotion
+    (Админ: привязать товары к акции) as UC_AdminAttachProductsToPromotion
+  }
+}
+
+
+Guest --> UC_Register
+Guest --> UC_Login
+Guest --> UC_ViewCatalog
+Guest --> UC_ViewProduct
+Guest --> UC_ViewCategories
+Guest --> UC_ViewPromotions
+Guest --> UC_ViewReviews
+
+' User (наследует все UC гостя + свои)
+User --> UC_Refresh
+User --> UC_ChangePassword
+User --> UC_ViewProfile
+User --> UC_UpdateProfile
+
+User --> UC_ViewCart
+User --> UC_AddToCart
+User --> UC_UpdateCartQty
+User --> UC_RemoveFromCart
+User --> UC_ClearCart
+
+User --> UC_CreateOrder
+User --> UC_ViewOwnOrders
+
+User --> UC_AddReview
+
+Admin --> UC_AdminCreateProduct
+Admin --> UC_AdminUpdateProduct
+Admin --> UC_AdminDeleteProduct
+Admin --> UC_AdminManageCategories
+
+Admin --> UC_AdminViewAllOrders
+Admin --> UC_AdminChangeOrderStatus
+
+Admin --> UC_AdminCreatePromotion
+Admin --> UC_AdminUpdatePromotion
+Admin --> UC_AdminDeletePromotion
+Admin --> UC_AdminAttachProductsToPromotion
+
+
+
+@enduml

@@ -1,0 +1,103 @@
+@startuml
+title Интернет-магазин "Shop-core"
+
+class User {
+    id: int
+    first_name: string
+    last_name: string
+    login: string
+    password_hash: string
+    role: string <<user|admin>>
+    created_at: datetime
+}
+
+class Category {
+    id: int
+    name: string
+}
+
+class Product {
+    id: int
+    name: string
+    description: string
+    price: decimal
+    rating: float
+    category_id: int
+    created_at: datetime
+}
+
+class Cart {
+    id: int
+    user_id: int
+    status: string <<active|ordered>>
+    created_at: datetime
+}
+
+class CartItem {
+    id: int
+    cart_id: int
+    product_id: int
+    quantity: int
+    price_at_add: decimal
+}
+
+class Order {
+    id: int
+    user_id: int
+    total_price: decimal
+    status: string <<created|paid|canceled|shipped>>
+    full_name: string
+    phone: string
+    address: string
+    created_at: datetime
+}
+
+class OrderItem {
+    id: int
+    order_id: int
+    product_id: int
+    quantity: int
+    price: decimal
+}
+
+class Review {
+    id: int
+    user_id: int
+    product_id: int
+    rating: int <<1..5>>
+    comment: string
+    created_at: datetime
+}
+
+class Promotion {
+    id: int
+    title: string
+    description: string
+    discount_percent: float
+    starts_at: datetime
+    ends_at: datetime
+    is_active: bool
+}
+
+class PromotionProduct {
+    promotion_id: int
+    product_id: int
+}
+
+User "1" -- "0..*" Cart
+User "1" -- "0..*" Order
+User "1" -- "0..*" Review
+
+Category "1" -- "0..*" Product
+
+Product "1" -- "0..*" Review
+Product "1" -- "0..*" CartItem
+Product "1" -- "0..*" OrderItem
+Product "1" -- "0..*" PromotionProduct
+
+Cart "1" -- "1..*" CartItem
+Order "1" -- "1..*" OrderItem
+
+Promotion "1" -- "0..*" PromotionProduct
+
+@enduml
