@@ -1,4 +1,4 @@
-@startuml
+@startuml use_case
 title Интернет-магазин "Shop-core" 
 
 left to right direction

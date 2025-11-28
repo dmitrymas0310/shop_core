@@ -1,4 +1,10 @@
-@startuml
+@startuml er-model
+skinparam defaultFontName Arial
+skinparam dpi 200
+skinparam classFontSize 14
+scale max 2000 width
+
+
 title Интернет-магазин "Shop-core"
 
 class User {
@@ -45,7 +51,7 @@ class Order {
     id: int
     user_id: int
     total_price: decimal
-    status: string <<created|paid|canceled|shipped>>
+    #status: string <<created|paid|canceled|shipped>>
     full_name: string
     phone: string
     address: string
