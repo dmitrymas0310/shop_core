@@ -1,9 +1,24 @@
+import uuid
+from datetime import datetime
 from typing import AsyncGenerator
 
+
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, DeclarativeBase, declarative_mixin
+from sqlalchemy import Column, DateTime
+from sqlalchemy.dialects.postgresql import UUID
 
 from app.core.config import settings
+
+class Base(DeclarativeBase):
+    pass
+
+@declarative_mixin
+class BaseModelMixin:
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 
 
 # echo True увидем какие логи - какие sql запросы отправляет приложение к БД 
