@@ -1,55 +1,54 @@
 @startuml er-model
-skinparam defaultFontName Arial
-skinparam dpi 200
-skinparam classFontSize 14
-scale max 2000 width
 
 
 title Интернет-магазин "Shop-core"
 
 class User {
-    id: int
+    id: uuid
     first_name: string
     last_name: string
     login: string
     password_hash: string
     role: string <<user|admin>>
     created_at: datetime
+    update_at: datetime
 }
 
 class Category {
-    id: int
+    id: uuid
     name: string
 }
 
 class Product {
-    id: int
+    id: uuid
     name: string
     description: string
     price: decimal
     rating: float
-    category_id: int
+    category_id: uuid
     created_at: datetime
+    update_at: datetime
 }
 
 class Cart {
-    id: int
-    user_id: int
+    id: uuid
+    user_id: uuid
     status: string <<active|ordered>>
     created_at: datetime
+    update_at: datetime
 }
 
 class CartItem {
-    id: int
-    cart_id: int
-    product_id: int
+    id: uuid
+    cart_id: uuid
+    product_id: uuid
     quantity: int
     price_at_add: decimal
 }
 
 class Order {
-    id: int
-    user_id: int
+    id: uuid
+    user_id: uuid
     total_price: decimal
     #status: string <<created|paid|canceled|shipped>>
     full_name: string
@@ -59,24 +58,24 @@ class Order {
 }
 
 class OrderItem {
-    id: int
-    order_id: int
-    product_id: int
+    id: uuid
+    order_id: uuid
+    product_id: uuid
     quantity: int
     price: decimal
 }
 
 class Review {
-    id: int
-    user_id: int
-    product_id: int
+    id: uuid
+    user_id: uuid
+    product_id: uuid
     rating: int <<1..5>>
     comment: string
     created_at: datetime
 }
 
 class Promotion {
-    id: int
+    id: uuid
     title: string
     description: string
     discount_percent: float
@@ -86,8 +85,8 @@ class Promotion {
 }
 
 class PromotionProduct {
-    promotion_id: int
-    product_id: int
+    promotion_id: uuid
+    product_id: uuid
 }
 
 User "1" -- "0..*" Cart
