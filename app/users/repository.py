@@ -12,12 +12,12 @@ class UserRepository:
   def __init__(self, db: AsyncSession):
     self.db = db
   
-  async def create_user(self, first_name: str, last_name: str, login: str, password: str, role: UserRole) -> User:
+  async def create_user(self, first_name: str, last_name: str, login: str, password_hash: str, role: UserRole) -> User:
     user = User(
       first_name = first_name,
       last_name = last_name,
       login = login,
-      password_hash = password,
+      password_hash = password_hash,
       role = role
     )
     self.db.add(user)

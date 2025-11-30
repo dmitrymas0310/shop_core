@@ -1,5 +1,10 @@
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent))  # Добавляет shop_core в путь поиска
+
 import asyncio
 from app.core.db import engine, Base
+from app.users.models import User
 
 async def create_db():
     async with engine.begin() as connection:

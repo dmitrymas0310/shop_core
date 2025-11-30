@@ -13,6 +13,7 @@ sqlalchemy = "^2.0.44"
 asyncpg = "^0.31.0"
 alembic = "^1.17.2"
 dynaconf = "^3.2.12"
+passlib = "^1.7.4"
 
 
 [build-system]
