@@ -5,6 +5,10 @@ from fastapi import APIRouter, Depends, status
 
 from app.users.service import UserService, get_user_service
 from app.users.schemas import UserCreate, UserRead, UserUpdate, UserChangePassword
+from app.auth.service import get_current_user_dep, require_admin
+from app.users.models import User
+from app.users.enum import UserRole
+from fastapi import HTTPException
 
 router = APIRouter(
     prefix="/users",
@@ -32,6 +36,7 @@ async def list_users(
     limit: int = 100,
     skip: int = 0,
     service: UserService = Depends(get_user_service),
+    admin: User = Depends(require_admin)
 ) -> List[UserRead]:
     return await service.list_users(limit=limit, skip=skip)
 
@@ -43,7 +48,13 @@ async def list_users(
 async def get_user(
     user_id: UUID,
     service: UserService = Depends(get_user_service),
+    current_user: User = Depends(get_current_user_dep)
 ) -> UserRead:
+    if current_user.role != UserRole.ADMIN and current_user.id != user_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not enough permissions",
+        )
     return await service.get_user(user_id)
 
 @router.patch(
@@ -55,7 +66,13 @@ async def update_user(
     user_id: UUID,
     payload: UserUpdate,
     service: UserService = Depends(get_user_service),
+    current_user: User = Depends(get_current_user_dep)
 ) -> UserRead:
+    if current_user.role != UserRole.ADMIN and current_user.id != user_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not enough permissions",
+        )
     return await service.update_user(user_id, payload)
 
 @router.post(
@@ -67,6 +84,12 @@ async def change_password(
     user_id: UUID,
     payload: UserChangePassword,
     service: UserService = Depends(get_user_service),
+    current_user: User = Depends(get_current_user_dep)
 ) -> None:
+    if current_user.role != UserRole.ADMIN and current_user.id != user_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not enough permissions",
+        )
 
     await service.change_password(user_id, payload)
