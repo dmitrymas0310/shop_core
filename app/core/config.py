@@ -22,16 +22,23 @@ class DBConfig(BaseModel):
             f"postgresql+asyncpg://{self.db_user}:{self.db_password}"
             f"@{self.db_host}:{self.db_port}/{self.db_name}"
         )
+class AuthConfig(BaseModel):
+    secret_key: str
+    algorithm: str
+    access_token_expire_minutes: int
+    refresh_token_expire_days: int
+
 
 
 class Settings(BaseModel):
     app: APPConfig
     db: DBConfig
+    auth: AuthConfig
 
 
 env_settings = Dynaconf(settings_file=["settings.toml"])
 
-settings = Settings(app=env_settings["app_settings"], db=env_settings["db_settings"])
+settings = Settings(app=env_settings["app_settings"], db=env_settings["db_settings"], auth=env_settings["auth_settings"])
 
 if __name__ == "__main__":
     print(settings.db.dsl)
