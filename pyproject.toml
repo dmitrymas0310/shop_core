@@ -14,6 +14,8 @@ asyncpg = "^0.31.0"
 alembic = "^1.17.2"
 dynaconf = "^3.2.12"
 passlib = "^1.7.4"
+jose = "^1.0.0"
+python-jose = "^3.5.0"
 
 
 [build-system]
