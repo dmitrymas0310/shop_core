@@ -11,6 +11,8 @@ from app.core.db import Base
 from app.core.config import settings
 from app.users.models import User
 from app.users.enum import UserRole
+from app.cart.models import Cart, CartItem
+from app.catalog.models import Product, Category
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
