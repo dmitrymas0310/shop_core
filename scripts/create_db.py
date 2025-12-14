@@ -8,8 +8,8 @@ from app.users.models import User
 
 async def create_db():
     async with engine.begin() as connection:
-        #await connection.run_sync(Base.metadata.drop_all)
-        await connection.run_sync(Base.metadata.create_all)
+        await connection.run_sync(Base.metadata.drop_all)
+        #await connection.run_sync(Base.metadata.create_all)
 
     print("Database created or dropped successfully.")
 

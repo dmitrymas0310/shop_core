@@ -10,10 +10,7 @@ from app.users.models import User
 from app.users.enum import UserRole
 from fastapi import HTTPException
 
-router = APIRouter(
-    prefix="/users",
-    tags=["users"],
-)
+router = APIRouter()
 
 @router.post(
     "/",
