@@ -1,54 +1,55 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.db import get_session
-from . import crud, schemas
-from app.auth.service import get_current_user_dep #???
+from app.reviews import crud, schemas
 from app.users.models import User
+from app.auth.service import get_current_user_dep
+from uuid import UUID
 
-router = APIRouter(prefix="/reviews", tags=["Reviews"])
+router = APIRouter()
 
 @router.post("/", response_model=schemas.ReviewRead, status_code=status.HTTP_201_CREATED)
-def create_new_review(
+async def create_review(
     review: schemas.ReviewCreate,
-    db: Session = Depends(get_session),
-    current_user: User = Depends(get_current_user_dep)
+    db: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user_dep),
 ):
-    return crud.create_review(db=db, review_in=review, user_id=current_user.id)
+    return await crud.create_review(db=db, review_in=review, user_id=current_user.id)
 
 @router.get("/{review_id}", response_model=schemas.ReviewRead)
-def read_review(review_id: int, db: Session = Depends(get_session)):
-    db_review = crud.get_review(db, review_id)
+async def read_review(review_id: UUID, db: AsyncSession = Depends(get_session)):
+    db_review = await crud.get_review(db, review_id)
     if not db_review:
         raise HTTPException(status_code=404, detail="Review not found")
     return db_review
 
 @router.get("/product/{product_id}", response_model=list[schemas.ReviewRead])
-def read_reviews_by_product(product_id: int, db: Session = Depends(get_session)):
-    return crud.get_reviews_by_product(db, product_id)
+async def read_reviews_by_product(product_id: UUID, db: AsyncSession = Depends(get_session)):
+    return await crud.get_reviews_by_product(db, product_id)
 
 @router.put("/{review_id}", response_model=schemas.ReviewRead)
-def update_existing_review(
-    review_id: int,
+async def update_review(
+    review_id: UUID,
     review_update: schemas.ReviewUpdate,
-    db: Session = Depends(get_session),
-    current_user: User = Depends(get_current_user_dep)
+    db: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user_dep),
 ):
-    db_review = crud.get_review(db, review_id)
+    db_review = await crud.get_review(db, review_id)
     if not db_review:
         raise HTTPException(status_code=404, detail="Review not found")
     if db_review.user_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Not authorized to edit this review")
-    return crud.update_review(db, review_id, review_update)
+        raise HTTPException(status_code=403, detail="Not authorized")
+    return await crud.update_review(db, review_id, review_update)
 
 @router.delete("/{review_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_existing_review(
-    review_id: int,
-    db: Session = Depends(get_session),
-    current_user: User = Depends(get_current_user_dep)
+async def delete_review(
+    review_id: UUID,
+    db: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user_dep),
 ):
-    db_review = crud.get_review(db, review_id)
+    db_review = await crud.get_review(db, review_id)
     if not db_review:
         raise HTTPException(status_code=404, detail="Review not found")
     if db_review.user_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Not authorized to delete this review")
-    crud.delete_review(db, review_id)
+        raise HTTPException(status_code=403, detail="Not authorized")
+    await crud.delete_review(db, review_id)

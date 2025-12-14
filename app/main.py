@@ -18,8 +18,7 @@ app = FastAPI(
     openapi_url="/api/openapi.json",
 )
 
-app.include_router(reviews_router)
-
+app.include_router(reviews_router, prefix="/api/v1/reviews", tags=["reviews"])
 app.include_router(users_router, prefix="/api/v1/users", tags=["users"])
 app.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"])
 app.include_router(cart_router, prefix="/api/v1/cart", tags=["cart"])
