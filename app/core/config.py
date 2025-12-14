@@ -7,6 +7,7 @@ class APPConfig(BaseModel):
     app_name: str
     app_host: str
     app_port: int
+    mode: str
 
 
 class DBConfig(BaseModel):
@@ -33,12 +34,17 @@ class AuthConfig(BaseModel):
 class Settings(BaseModel):
     app: APPConfig
     db: DBConfig
+    db_test: DBConfig
     auth: AuthConfig
 
 
 env_settings = Dynaconf(settings_file=["settings.toml"])
 
-settings = Settings(app=env_settings["app_settings"], db=env_settings["db_settings"], auth=env_settings["auth_settings"])
+settings = Settings(
+    app=env_settings["app_settings"], 
+    db=env_settings["db_settings"], 
+    db_test=env_settings["db_test_settings"], 
+    auth=env_settings["auth_settings"])
 
 if __name__ == "__main__":
     print(settings.db.dsl)

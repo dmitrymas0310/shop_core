@@ -11,7 +11,7 @@ from app.users.schemas import UserCreate, UserRead
 router = APIRouter()
 
 
-@router.post("/registrate", response_model=UserRead)
+@router.post("/registrate", response_model=UserRead, summary="Создаёт нового пользователя в системе",)
 async def registrate(
     form_data: UserCreate,
     service: UserService = Depends(get_user_service),
@@ -20,7 +20,7 @@ async def registrate(
     return user
 
 
-@router.post("/token", response_model=Token)
+@router.post("/token", response_model=Token, summary="Аутентификация пользователя и выдача access-токена",)
 async def login_for_access_token(
     form_data: Login,
     service: AuthService = Depends(get_req_service),
@@ -53,7 +53,7 @@ async def login_for_access_token(
     )
 
 
-@router.post("/refresh", response_model=Token)
+@router.post("/refresh", response_model=Token, summary="Обновляет access и refresh токены пользователя",)
 async def refresh_tokens(
     body: RefreshRequest,
     service: AuthService = Depends(get_req_service),
@@ -67,7 +67,7 @@ async def refresh_tokens(
     )
 
 
-@router.get("/users/me", response_model=UserRead)
+@router.get("/users/me", response_model=UserRead, summary="Возвращает данные авторизованного пользователя",)
 async def read_users_me(
     service: AuthService = Depends(get_auth_service),
 ):
@@ -75,7 +75,7 @@ async def read_users_me(
     return current_user
 
 
-@router.get("/protected")
+@router.get("/protected", summary="Cлужебный защищённый эндпоинт",)
 async def protected_route(
     service: AuthService = Depends(get_auth_service),
 ):

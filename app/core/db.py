@@ -20,9 +20,14 @@ class BaseModelMixin:
     updated_at = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
+db_dsn = (
+    settings.db_test.dsl
+    if settings.app.mode == "test"
+    else settings.db.dsl
+)
 
 # echo True увидем какие логи - какие sql запросы отправляет приложение к БД 
-engine = create_async_engine(settings.db.dsl, echo=True)
+engine = create_async_engine(db_dsn, echo=True)
 
 # Из движка нужно получить сессию (наш коннект), 
 # sessionmaker принимает движок и передать параметр, что сессия будет асинхронной
