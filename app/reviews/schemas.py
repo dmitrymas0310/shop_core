@@ -1,9 +1,9 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, UUID4
 from datetime import datetime
 from typing import Optional
 
 class ReviewBase(BaseModel):
-    product_id: int
+    product_id: UUID4
     rating: float = Field(..., ge=1, le=5)
     comment: Optional[str] = None
 
@@ -11,8 +11,8 @@ class ReviewCreate(ReviewBase):
     pass
 
 class ReviewRead(ReviewBase):
-    id: int
-    user_id: int
+    id: UUID4
+    user_id: UUID4
     created_at: datetime
 
     class Config:
