@@ -3,6 +3,7 @@ app_version = "0.1.0"
 app_name = "shop_core"
 app_host = "0.0.0.0"
 app_port = 8000
+mode = "test"        # dev | test
 
 [db_settings]
 db_name = "postgres"
@@ -10,6 +11,13 @@ db_user = "user"
 db_password = "password"
 db_host = "localhost"
 db_port = 5432
+
+[db_test_settings]
+db_name = "postgres"
+db_user = "user"
+db_password = "password"
+db_host = "localhost"
+db_port = 5434
 
 [auth_settings]
 secret_key = "secret-key"

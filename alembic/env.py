@@ -9,14 +9,21 @@ from alembic import context
 
 from app.core.db import Base
 from app.core.config import settings
+from app.core.db import db_dsn
 from app.users.models import User
 from app.users.enum import UserRole
+from app.cart.models import Cart, CartItem
+from app.catalog.models import Product, Category
+from app.reviews.models import Review
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
-config.set_main_option("sqlalchemy.url", settings.db.dsl)
+print("ALEMBIC MODE:", settings.app.mode)
+print("ALEMBIC DSN:", db_dsn)
+
+config.set_main_option("sqlalchemy.url", db_dsn)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
