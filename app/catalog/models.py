@@ -72,3 +72,5 @@ class Product(Base, BaseModelMixin):
             "category_id": self.category_id,
             "category_name": self.category.name if self.category else None,
         }
+
+reviews = relationship("Review", back_populates="product")

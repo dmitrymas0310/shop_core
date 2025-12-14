@@ -9,13 +9,15 @@ from app.auth.api import router as auth_router
 from app.cart.api import router as cart_router
 from app.catalog.api import router as catalog_router
 from app.promotions.api import router as promotions_router
-
+from app.reviews.router import router as reviews_router
 
 app = FastAPI(
     title=settings.app.app_name,      
     docs_url="/api/docs",
     openapi_url="/api/openapi.json",
 )
+
+app.include_router(reviews_router)
 
 app.include_router(users_router, prefix="/api/v1/users", tags=["users"])
 app.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"])

@@ -35,6 +35,7 @@ class User(Base, BaseModelMixin):
             "role": self.role
         }
 
+reviews = relationship("Review", back_populates="user")
 
 
 
