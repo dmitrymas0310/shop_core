@@ -10,6 +10,7 @@ from app.cart.api import router as cart_router
 from app.catalog.api import router as catalog_router
 from app.promotions.api import router as promotions_router
 from app.reviews.router import router as reviews_router
+from app.orders.api import router as orders_router
 
 app = FastAPI(
     title=settings.app.app_name,      
@@ -24,6 +25,8 @@ app.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"])
 app.include_router(cart_router, prefix="/api/v1/cart", tags=["cart"])
 app.include_router(catalog_router, prefix="/api/v1/catalog", tags=["catalog"])
 app.include_router(promotions_router, prefix="/api/v1/promotions", tags=["promotions"])
+app.include_router(orders_router, prefix="/api/v1/orders", tags=["orders"])
+
 
 
 if __name__ == "__main__":
