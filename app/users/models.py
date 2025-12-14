@@ -23,6 +23,11 @@ class User(Base, BaseModelMixin):
         cascade="all, delete-orphan"
     )
 
+    reviews = relationship(
+        "Review", 
+        back_populates="user", 
+        cascade="all, delete-orphan")
+
     def __repr__(self) -> str:
         return f"id - {self.id}, first_name - {self.first_name}, last_name- {self.last_name}, , login- {self.login}, role- {self.role}"
     
@@ -35,7 +40,7 @@ class User(Base, BaseModelMixin):
             "role": self.role
         }
 
-reviews = relationship("Review", back_populates="user")
+
 
 
 

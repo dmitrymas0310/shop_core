@@ -34,6 +34,12 @@ class Category(Base, BaseModelMixin):
 
 class Product(Base, BaseModelMixin):
     __tablename__ = "products"
+    
+    reviews = relationship(
+        "Review",
+        back_populates="product",
+        cascade="all, delete-orphan"
+    )
 
     name = Column(String, nullable=False)
     description = Column(String, nullable=True)
@@ -72,5 +78,3 @@ class Product(Base, BaseModelMixin):
             "category_id": self.category_id,
             "category_name": self.category.name if self.category else None,
         }
-
-reviews = relationship("Review", back_populates="product")

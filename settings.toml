@@ -3,7 +3,7 @@ app_version = "0.1.0"
 app_name = "shop_core"
 app_host = "0.0.0.0"
 app_port = 8000
-mode = "dev"        # dev | test
+mode = "test"        # dev | test
 
 [db_settings]
 db_name = "postgres"
