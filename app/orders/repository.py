@@ -7,7 +7,7 @@ from app.orders.models import Order, OrderItem, OrderStatus
 from app.catalog.models import Product
 
 class OrderRepository:
-	def __init__(self, db: AsyncSession):
+	def __init__(self, db):
 		self.db = db
 
 	async def create_order(self, user_id: UUID, shipping_address: str, 
