@@ -13,7 +13,6 @@ from app.users.enum import UserRole
 
 
 router = APIRouter(
-    prefix="/promotions",
     tags=["promotions"],
 )
 
