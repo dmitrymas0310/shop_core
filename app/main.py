@@ -31,7 +31,7 @@ app.include_router(orders_router, prefix="/api/v1/orders", tags=["orders"])
 if __name__ == "__main__":
     uvicorn.run(
         "app.main:app",
-        host=settings.app_host,
-        port=settings.app_port,
+        host=settings.app.app_host,
+        port=settings.app.app_port,
         reload=True,
     )
