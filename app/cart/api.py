@@ -8,10 +8,7 @@ from app.auth.service import get_current_user_dep
 from app.users.models import User
 from app.users.enum import UserRole
 
-router = APIRouter(
-    prefix="/cart",
-    tags=["cart"],
-)
+router = APIRouter()
 
 
 @router.get(

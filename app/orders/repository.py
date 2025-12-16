@@ -3,11 +3,13 @@ from typing import Optional, List
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, delete, and_
 from sqlalchemy.orm import selectinload
+from fastapi import Depends
 from app.orders.models import Order, OrderItem, OrderStatus
 from app.catalog.models import Product
+from app.core.db import get_session
 
 class OrderRepository:
-	def __init__(self, db: AsyncSession):
+	def __init__(self, db):
 		self.db = db
 
 	async def create_order(self, user_id: UUID, shipping_address: str, 
@@ -123,5 +125,5 @@ class OrderRepository:
 		return len(result.scalars().all())
 
 
-async def get_order_repository(db: AsyncSession) -> OrderRepository:
+async def get_order_repository(db: AsyncSession = Depends(get_session)) -> OrderRepository:
 	return OrderRepository(db)
