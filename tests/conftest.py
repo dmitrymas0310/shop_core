@@ -17,7 +17,7 @@ async def aiohttp_client():
         await session.close()
 
 
-@pytest_asyncio.fixture(scope="session")
+@pytest_asyncio.fixture(scope="function")
 async def test_engine():
     engine = create_async_engine(settings.db_test.dsl)
     try:
