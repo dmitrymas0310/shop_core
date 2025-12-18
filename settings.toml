@@ -6,7 +6,7 @@ app_port = 8000
 mode = "test"        # dev | test
 
 [db_settings]
-db_name = "shop_core_test"
+db_name = "shop_core_dev"
 db_user = "user"
 db_password = "password"
 db_host = "localhost"
