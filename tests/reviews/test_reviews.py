@@ -93,7 +93,7 @@ async def test_create_review_unauthorized_401(aiohttp_client):
         "product_id": str(uuid.uuid4()),
         "rating": 3.0
     })
-    assert resp.status == 403
+    assert resp.status == 401
     data = await resp.json()
     assert data["detail"] == "Not authenticated"
 
