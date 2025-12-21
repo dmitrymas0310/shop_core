@@ -38,6 +38,7 @@ class PromotionRepository:
         result = await self.db.execute(
             select(Promotion)
             .options(selectinload(Promotion.promotion_products))
+            .execution_options(populate_existing=True)
             .where(Promotion.id == promotion_id)
         )
         return result.scalar_one_or_none()

@@ -1,5 +1,6 @@
 import pytest
 from datetime import datetime, timedelta
+from uuid import uuid4
 
 # Префиксы API
 AUTH_PREFIX = "/api/v1/auth"
@@ -13,10 +14,16 @@ def bearer(token: str) -> dict:
     return {"Authorization": f"Bearer {token}"}
 
 
+
+def unique_login(base: str) -> str:
+    return f"{base}_{uuid4().hex[:8]}"
+
+
 # --- Вспомогательные функции для тестов ---
 
 async def register_user(aiohttp_client, login: str, role: str = "user", password: str = "StrongPass123!"):
     """Регистрирует пользователя через API."""
+    login = unique_login(login)
     resp = await aiohttp_client.post(f"{USERS_PREFIX}/", json={
         "first_name": "Test",
         "last_name": "User",
@@ -38,7 +45,7 @@ async def login(aiohttp_client, login: str, password: str = "StrongPass123!"):
 async def create_product(aiohttp_client, admin_token: str, name: str, price: float = 100.0):
     """Создает товар через API."""
     resp = await aiohttp_client.post(
-        f"{CATALOG_PREFIX}/admin/products",
+        f"{CATALOG_PREFIX}/products",
         json={"name": name, "description": "Test description", "price": price},
         headers=bearer(admin_token)
     )
@@ -72,8 +79,8 @@ async def create_promotion(aiohttp_client, admin_token: str, title: str, discoun
 @pytest.mark.asyncio
 async def test_create_promotion_as_admin_ok_201(aiohttp_client):
     """[Admin] Успешное создание акции."""
-    await register_user(aiohttp_client, "promo_admin", role="admin")
-    tokens = await login(aiohttp_client, "promo_admin")
+    admin = await register_user(aiohttp_client, "promo_admin", role="admin")
+    tokens = await login(aiohttp_client, admin["login"])
     
     promo = await create_promotion(aiohttp_client, tokens["access_token"], "New Year Sale")
     
@@ -85,8 +92,8 @@ async def test_create_promotion_as_admin_ok_201(aiohttp_client):
 @pytest.mark.asyncio
 async def test_create_promotion_as_user_forbidden_403(aiohttp_client):
     """[User] Попытка создать акцию обычным пользователем."""
-    await register_user(aiohttp_client, "promo_user", role="user")
-    tokens = await login(aiohttp_client, "promo_user")
+    user = await register_user(aiohttp_client, "promo_user", role="user")
+    tokens = await login(aiohttp_client, user["login"])
     
     starts_at = datetime.utcnow().isoformat()
     ends_at = (datetime.utcnow() + timedelta(days=10)).isoformat()
@@ -107,24 +114,23 @@ async def test_create_promotion_as_user_forbidden_403(aiohttp_client):
 @pytest.mark.asyncio
 async def test_get_active_promotions_public_ok_200(aiohttp_client):
     """[Public] Получение списка активных акций."""
-    await register_user(aiohttp_client, "promo_admin_2", role="admin")
-    tokens = await login(aiohttp_client, "promo_admin_2")
+    admin = await register_user(aiohttp_client, "promo_admin_2", role="admin")
+    tokens = await login(aiohttp_client, admin["login"])
     
-    await create_promotion(aiohttp_client, tokens["access_token"], "Active Promo")
+    promo = await create_promotion(aiohttp_client, tokens["access_token"], "Active Promo")
     
     resp = await aiohttp_client.get(f"{PROMOTIONS_PREFIX}/")
     assert resp.status == 200, await resp.text()
     data = await resp.json()
     assert isinstance(data, list)
-    assert len(data) > 0
-    assert data[0]["title"] == "Active Promo"
+    assert any(item["id"] == promo["id"] for item in data)
 
 
 @pytest.mark.asyncio
 async def test_get_promotion_by_id_public_ok_200(aiohttp_client):
     """[Public] Получение акции по ID."""
-    await register_user(aiohttp_client, "promo_admin_3", role="admin")
-    tokens = await login(aiohttp_client, "promo_admin_3")
+    admin = await register_user(aiohttp_client, "promo_admin_3", role="admin")
+    tokens = await login(aiohttp_client, admin["login"])
     
     promo = await create_promotion(aiohttp_client, tokens["access_token"], "Promo By ID")
     
@@ -138,8 +144,8 @@ async def test_get_promotion_by_id_public_ok_200(aiohttp_client):
 @pytest.mark.asyncio
 async def test_attach_product_to_promotion_ok_200(aiohttp_client):
     """[Admin] Привязка товара к акции."""
-    await register_user(aiohttp_client, "promo_admin_4", role="admin")
-    tokens = await login(aiohttp_client, "promo_admin_4")
+    admin = await register_user(aiohttp_client, "promo_admin_4", role="admin")
+    tokens = await login(aiohttp_client, admin["login"])
     
     product = await create_product(aiohttp_client, tokens["access_token"], "Super TV")
     promo = await create_promotion(aiohttp_client, tokens["access_token"], "TV Sale")
@@ -159,8 +165,8 @@ async def test_attach_product_to_promotion_ok_200(aiohttp_client):
 @pytest.mark.asyncio
 async def test_detach_product_from_promotion_ok_200(aiohttp_client):
     """[Admin] Отвязка товара от акции."""
-    await register_user(aiohttp_client, "promo_admin_5", role="admin")
-    tokens = await login(aiohttp_client, "promo_admin_5")
+    admin = await register_user(aiohttp_client, "promo_admin_5", role="admin")
+    tokens = await login(aiohttp_client, admin["login"])
     
     product = await create_product(aiohttp_client, tokens["access_token"], "Mega Phone")
     promo = await create_promotion(aiohttp_client, tokens["access_token"], "Phone Sale")
@@ -188,8 +194,8 @@ async def test_detach_product_from_promotion_ok_200(aiohttp_client):
 @pytest.mark.asyncio
 async def test_delete_promotion_as_admin_ok_200(aiohttp_client):
     """[Admin] Удаление акции."""
-    await register_user(aiohttp_client, "promo_admin_6", role="admin")
-    tokens = await login(aiohttp_client, "promo_admin_6")
+    admin = await register_user(aiohttp_client, "promo_admin_6", role="admin")
+    tokens = await login(aiohttp_client, admin["login"])
     
     promo = await create_promotion(aiohttp_client, tokens["access_token"], "To Be Deleted")
     

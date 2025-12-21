@@ -1,15 +1,14 @@
 from uuid import UUID
 from typing import List, Optional
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, status
 
 from app.promotions.service import PromotionService, get_promotion_service
 from app.promotions.schemas import (
     PromotionCreate, PromotionUpdate, PromotionRead,
     PromotionWithProducts, AttachProductsRequest
 )
-from app.auth.service import get_current_user_dep
+from app.auth.service import require_admin
 from app.users.models import User
-from app.users.enum import UserRole
 
 
 router = APIRouter(
@@ -53,23 +52,18 @@ async def get_promotion(
 @router.post(
     "/admin",
     response_model=PromotionRead,
+    status_code=status.HTTP_201_CREATED,
     summary="[Админ] Создать новую акцию"
 )
 async def create_promotion(
         data: PromotionCreate,
-        current_user: User = Depends(get_current_user_dep),
+        _: User = Depends(require_admin),
         service: PromotionService = Depends(get_promotion_service)
 ) -> PromotionRead:
     """
     Создать новую акцию.
     Доступно только администраторам.
     """
-    if current_user.role != UserRole.ADMIN:
-        from fastapi import HTTPException, status
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only admins can create promotions"
-        )
     return await service.create_promotion(data)
 
 
@@ -82,19 +76,13 @@ async def get_all_promotions(
         limit: int = Query(100, ge=1, le=1000),
         skip: int = Query(0, ge=0),
         is_active: Optional[bool] = Query(None),
-        current_user: User = Depends(get_current_user_dep),
+        _: User = Depends(require_admin),
         service: PromotionService = Depends(get_promotion_service)
 ) -> List[PromotionRead]:
     """
     Получить список всех акций (активных и неактивных).
     Доступно только администраторам.
     """
-    if current_user.role != UserRole.ADMIN:
-        from fastapi import HTTPException, status
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only admins can view all promotions"
-        )
     return await service.get_all_promotions(limit=limit, skip=skip, is_active=is_active)
 
 
@@ -106,19 +94,13 @@ async def get_all_promotions(
 async def update_promotion(
         promotion_id: UUID,
         data: PromotionUpdate,
-        current_user: User = Depends(get_current_user_dep),
+        _: User = Depends(require_admin),
         service: PromotionService = Depends(get_promotion_service)
 ) -> PromotionRead:
     """
     Обновить существующую акцию.
     Доступно только администраторам.
     """
-    if current_user.role != UserRole.ADMIN:
-        from fastapi import HTTPException, status
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only admins can update promotions"
-        )
     return await service.update_promotion(promotion_id, data)
 
 
@@ -128,19 +110,13 @@ async def update_promotion(
 )
 async def delete_promotion(
         promotion_id: UUID,
-        current_user: User = Depends(get_current_user_dep),
+        _: User = Depends(require_admin),
         service: PromotionService = Depends(get_promotion_service)
 ) -> dict:
     """
     Удалить акцию.
     Доступно только администраторам.
     """
-    if current_user.role != UserRole.ADMIN:
-        from fastapi import HTTPException, status
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only admins can delete promotions"
-        )
     return await service.delete_promotion(promotion_id)
 
 
@@ -152,19 +128,13 @@ async def delete_promotion(
 async def attach_products_to_promotion(
         promotion_id: UUID,
         data: AttachProductsRequest,
-        current_user: User = Depends(get_current_user_dep),
+        _: User = Depends(require_admin),
         service: PromotionService = Depends(get_promotion_service)
 ) -> PromotionWithProducts:
     """
     Привязать товары к акции.
     Доступно только администраторам.
     """
-    if current_user.role != UserRole.ADMIN:
-        from fastapi import HTTPException, status
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only admins can attach products to promotions"
-        )
     return await service.attach_products(promotion_id, data)
 
 
@@ -176,17 +146,11 @@ async def attach_products_to_promotion(
 async def detach_products_from_promotion(
         promotion_id: UUID,
         data: AttachProductsRequest,
-        current_user: User = Depends(get_current_user_dep),
+        _: User = Depends(require_admin),
         service: PromotionService = Depends(get_promotion_service)
 ) -> PromotionWithProducts:
     """
     Отвязать товары от акции.
     Доступно только администраторам.
     """
-    if current_user.role != UserRole.ADMIN:
-        from fastapi import HTTPException, status
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only admins can detach products from promotions"
-        )
     return await service.detach_products(promotion_id, data)
